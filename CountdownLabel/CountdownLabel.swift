@@ -9,11 +9,11 @@
 import UIKit
 
 @objc public protocol CountdownLabelDelegate {
-    @objc optional func countdownStarted()
-    @objc optional func countdownPaused()
-    @objc optional func countdownFinished()
-    @objc optional func countdownCancelled()
-    @objc optional func countingAt(timeCounted: TimeInterval, timeRemaining: TimeInterval)
+    @objc optional func countdownStarted(lable: CountdownLabel)
+    @objc optional func countdownPaused(lable: CountdownLabel)
+    @objc optional func countdownFinished(lable: CountdownLabel)
+    @objc optional func countdownCancelled(lable: CountdownLabel)
+    @objc optional func countingAt(lable: CountdownLabel, timeCounted: TimeInterval, timeRemaining: TimeInterval)
 
 }
 extension TimeInterval {
@@ -166,7 +166,7 @@ public class CountdownLabel: LTMorphingLabel {
     // MARK: - Update
     @objc func updateLabel() {
         // delegate
-        countdownDelegate?.countingAt?(timeCounted: timeCounted, timeRemaining: timeRemaining)
+        countdownDelegate?.countingAt?(lable: self, timeCounted: timeCounted, timeRemaining: timeRemaining)
         
         // then function execute if needed
         thens.forEach { k, v in
@@ -182,7 +182,7 @@ public class CountdownLabel: LTMorphingLabel {
         // if end of timer
         if endOfTimer {
             text = dateFormatter.string(from: date1970.addingTimeInterval(0) as Date)
-            countdownDelegate?.countdownFinished?()
+            countdownDelegate?.countdownFinished?(lable: self)
             dispose()
             completion?()
         }
@@ -210,7 +210,7 @@ extension CountdownLabel {
         completion?()
         
         // set delegate
-        countdownDelegate?.countdownStarted?()
+        countdownDelegate?.countdownStarted?(lable: self)
     }
     
     public func pause(completion: (() -> ())? = nil) {
@@ -232,7 +232,7 @@ extension CountdownLabel {
         completion?()
         
         // set delegate
-        countdownDelegate?.countdownPaused?()
+      countdownDelegate?.countdownPaused?(lable: self)
     }
     
     public func cancel(completion: (() -> ())? = nil) {
@@ -243,7 +243,7 @@ extension CountdownLabel {
         completion?()
         
         // set delegate
-        countdownDelegate?.countdownCancelled?()
+        countdownDelegate?.countdownCancelled?(lable: self)
     }
     
     public func addTime(time: TimeInterval) {
